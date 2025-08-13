@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Migo Life — Offline</title>
+<meta name="theme-color" content="#ffffff">
+<style>
+*{box-sizing:border-box;font-family:system-ui,'Segoe UI',Roboto,Arial}
+body{margin:0;background:#f7f7f7;color:#111}
+header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e5e5;padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:5}
+header h1{margin:0;font-size:20px}
+#date{margin-inline-start:auto;opacity:.7}
+main{padding:12px;max-width:800px;margin:0 auto}
+.card{background:#fff;border:1px solid #eee;border-radius:12px;padding:12px;margin:10px 0}
+.card h2{margin:4px 0 12px 0;font-size:18px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.row label{font-weight:600}
+.grid .row{border-bottom:1px dashed #eee}
+.grid .row:last-child{border-bottom:none}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:36px;height:36px;border:1px solid #ddd;background:#fafafa;border-radius:8px}
+#saveBtn,#exportBtn,#importBtn,#toggleSensitive{border:1px solid #ddd;background:#fafafa;border-radius:10px;padding:8px 12px;cursor:pointer}
+#summary{font-size:14px;line-height:1.6}
+footer{padding:12px;text-align:center;opacity:.7}
+.sensitive.hidden{filter:blur(6px)}
+textarea,input[type="text"]{width:60%}
+@media (max-width:600px){
+  textarea,input[type="text"]{width:100%}
+}
+</style>
+</head>
+<body>
+  <header>
+    <h1>ميجو لايف</h1>
+    <div id="date"></div>
+    <button id="toggleSensitive" title="إظهار/إخفاء الخاص">إخفاء الخاص</button>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>الصلاة</h2>
+      <div class="grid">
+        <div class="row">
+          <label>الفجر</label>
+          <select id="pr_fajr">
+            <option value="missed">فائت</option>
+            <option value="late">قضاء</option>
+            <option value="onTime">في وقتها</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>الظهر</label>
+          <select id="pr_dhuhr">
+            <option value="missed">فائت</option>
+            <option value="late">قضاء</option>
+            <option value="onTime">في وقتها</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>العصر</label>
+          <select id="pr_asr">
+            <option value="missed">فائت</option>
+            <option value="late">قضاء</option>
+            <option value="onTime">في وقتها</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>المغرب</label>
+          <select id="pr_maghrib">
+            <option value="missed">فائت</option>
+            <option value="late">قضاء</option>
+            <option value="onTime">في وقتها</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>العشاء</label>
+          <select id="pr_isha">
+            <option value="missed">فائت</option>
+            <option value="late">قضاء</option>
+            <option value="onTime">في وقتها</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>الرياضة</h2>
+      <div class="row">
+        <label>تمرنت؟</label>
+        <input type="checkbox" id="didWorkout">
+      </div>
+      <div class="row">
+        <label>ضغط (عدّد)</label>
+        <div class="stepper">
+          <button data-step="pushups" data-d="-1">-</button>
+          <span id="pushups_val">0</span>
+          <button data-step="pushups" data-d="1">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <label>بطن (عدّد)</label>
+        <div class="stepper">
+          <button data-step="abs" data-d="-1">-</button>
+          <span id="abs_val">0</span>
+          <button data-step="abs" data-d="1">+</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>الصباح</h2>
+      <div class="row">
+        <label>صحيت الساعة</label>
+        <input type="time" id="wokeUpAt" placeholder="08:00">
+      </div>
+      <div class="row">
+        <label>مسكت الموبايل أول ما صحيت؟</label>
+        <input type="checkbox" id="phoneFirstThing">
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>التعلّم</h2>
+      <div class="row">
+        <label>اتعلمت إنجليزي؟</label>
+        <input type="checkbox" id="englishStudied">
+      </div>
+      <div class="row">
+        <label>اتفرجت على كورس؟</label>
+        <input type="checkbox" id="courseWatched">
+      </div>
+      <div class="row">
+        <label>كلمة جديدة</label>
+        <input type="text" id="newWord" placeholder="اكتب كلمة...">
+      </div>
+    </section>
+
+    <section class="card sensitive">
+      <h2>NoFap / خاص</h2>
+      <div class="row">
+        <label>اليوم نظيف؟</label>
+        <input type="checkbox" id="noFap">
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>الصحة والأكل</h2>
+      <div class="row">
+        <label>شربت مية كفاية؟</label>
+        <input type="checkbox" id="enoughWater">
+      </div>
+      <div class="row">
+        <label>ملاحظات الأكل</label>
+        <textarea id="mealsNote" rows="2" placeholder="اكتب باختصار..."></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>ملخص اليوم</h2>
+      <div id="summary"></div>
+      <button id="saveBtn">حفظ اليوم</button>
+    </section>
+
+    <section class="card">
+      <h2>إحصائيات سريعة</h2>
+      <div id="stats"></div>
+      <button id="exportBtn">تصدير البيانات (JSON)</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+      <button id="importBtn">استيراد بيانات</button>
+    </section>
+
+  </main>
+
+  <footer>
+    <small>البيانات محفوظة محليًا على جهازك (localStorage). لو عايزها كأبلكيشن كامل، ارفع الملف ده على أي استضافة وبعدين Add to Home Screen.</small>
+  </footer>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const date = new Date();
+  const dateKey = date.toISOString().slice(0,10); // yyyy-mm-dd
+  const state = loadDay(dateKey);
+
+  const els = {
+    fajr: $('pr_fajr'),
+    dhuhr: $('pr_dhuhr'),
+    asr: $('pr_asr'),
+    maghrib: $('pr_maghrib'),
+    isha: $('pr_isha'),
+    didWorkout: $('didWorkout'),
+    pushupsVal: $('pushups_val'),
+    absVal: $('abs_val'),
+    wokeUpAt: $('wokeUpAt'),
+    phoneFirstThing: $('phoneFirstThing'),
+    englishStudied: $('englishStudied'),
+    courseWatched: $('courseWatched'),
+    newWord: $('newWord'),
+    noFap: $('noFap'),
+    enoughWater: $('enoughWater'),
+    mealsNote: $('mealsNote'),
+    summary: $('summary'),
+    stats: $('stats'),
+  };
+
+  document.querySelector('#date').textContent = new Intl.DateTimeFormat('ar-EG', { dateStyle: 'full' }).format(date);
+
+  els.fajr.value = state.prayers.fajr;
+  els.dhuhr.value = state.prayers.dhuhr;
+  els.asr.value = state.prayers.asr;
+  els.maghrib.value = state.prayers.maghrib;
+  els.isha.value = state.prayers.isha;
+
+  els.didWorkout.checked = state.didWorkout;
+  els.pushupsVal.textContent = state.pushups;
+  els.absVal.textContent = state.abs;
+
+  els.wokeUpAt.value = state.wokeUpAt || '';
+  els.phoneFirstThing.checked = state.phoneFirstThing;
+
+  els.englishStudied.checked = state.englishStudied;
+  els.courseWatched.checked = state.courseWatched;
+  els.newWord.value = state.newWord || '';
+
+  els.noFap.checked = state.noFap;
+  els.enoughWater.checked = state.enoughWater;
+  els.mealsNote.value = state.mealsNote || '';
+
+  document.querySelectorAll('select').forEach(sel => sel.addEventListener('change', save));
+  ['didWorkout','phoneFirstThing','englishStudied','courseWatched','noFap','enoughWater'].forEach(id=>{
+    $(id).addEventListener('change', save);
+  });
+  $('wokeUpAt').addEventListener('change', save);
+  $('newWord').addEventListener('input', save);
+  $('mealsNote').addEventListener('input', save);
+
+  document.querySelectorAll('.stepper button').forEach(btn=>{
+    btn.addEventListener('click', () => {
+      const field = btn.dataset.step; // pushups or abs
+      const d = parseInt(btn.dataset.d,10);
+      state[field] = Math.max(0, (state[field]||0) + d);
+      if (field==='pushups') els.pushupsVal.textContent = state.pushups;
+      if (field==='abs') els.absVal.textContent = state.abs;
+      save();
+    });
+  });
+
+  $('saveBtn').addEventListener('click', () => {
+    save();
+    alert('تم حفظ اليوم ✅');
+  });
+
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', () => $('importFile').click());
+  $('importFile').addEventListener('change', importData);
+
+  const sensitiveSection = document.querySelector('.sensitive');
+  let hidden = true;
+  const toggleBtn = document.getElementById('toggleSensitive');
+  const updateSensitive = () => {
+    sensitiveSection.classList.toggle('hidden', hidden);
+    toggleBtn.textContent = hidden ? 'إظهار الخاص' : 'إخفاء الخاص';
+  };
+  toggleBtn.addEventListener('click', () => { hidden = !hidden; updateSensitive(); });
+  updateSensitive();
+
+  updateSummary();
+  updateStats();
+
+  function loadDay(key){
+    const all = JSON.parse(localStorage.getItem('migo_data') || '{}');
+    return all[key] || {
+      prayers: { fajr:'missed', dhuhr:'missed', asr:'missed', maghrib:'missed', isha:'missed' },
+      didWorkout:false, pushups:0, abs:0,
+      wokeUpAt:'', phoneFirstThing:false,
+      englishStudied:false, courseWatched:false, newWord:'',
+      noFap:true, enoughWater:false, mealsNote:''
+    };
+  }
+  function save(){
+    state.prayers = {
+      fajr: els.fajr.value,
+      dhuhr: els.dhuhr.value,
+      asr: els.asr.value,
+      maghrib: els.maghrib.value,
+      isha: els.isha.value,
+    };
+    state.didWorkout = els.didWorkout.checked;
+    state.wokeUpAt = els.wokeUpAt.value;
+    state.phoneFirstThing = els.phoneFirstThing.checked;
+    state.englishStudied = els.englishStudied.checked;
+    state.courseWatched = els.courseWatched.checked;
+    state.newWord = els.newWord.value;
+    state.noFap = els.noFap.checked;
+    state.enoughWater = els.enoughWater.checked;
+    state.mealsNote = els.mealsNote.value;
+
+    const all = JSON.parse(localStorage.getItem('migo_data') || '{}');
+    all[dateKey] = state;
+    localStorage.setItem('migo_data', JSON.stringify(all));
+    updateSummary();
+    updateStats();
+  }
+
+  function updateSummary(){
+    const prayers = Object.values(state.prayers);
+    const onTime = prayers.filter(p=>p==='onTime').length;
+    $('summary').innerHTML = `
+      <div>صلوات في وقتها: ${onTime} / 5</div>
+      <div>تمرنت: ${state.didWorkout ? 'نعم' : 'لا'} | ضغط: ${state.pushups} | بطن: ${state.abs}</div>
+      <div>صحيت: ${state.wokeUpAt || '-'}, موبايل أولاً: ${state.phoneFirstThing ? 'نعم' : 'لا'}</div>
+      <div>إنجليزي: ${state.englishStudied ? '✓' : '✗'} | كورس: ${state.courseWatched ? '✓' : '✗'} | كلمة: ${state.newWord || '-'}</div>
+      <div>ماء كفاية: ${state.enoughWater ? '✓' : '✗'}</div>
+      <div>ملاحظات الأكل: ${state.mealsNote ? state.mealsNote : '-'}</div>
+      <div>خاص (NoFap): ${state.noFap ? 'نظيف' : 'X'}</div>
+    `;
+  }
+
+  function updateStats(){
+    const all = JSON.parse(localStorage.getItem('migo_data') || '{}');
+    const keys = Object.keys(all).sort();
+    let streak = 0;
+    for (let i = keys.length - 1; i >= 0; i--) {
+      const day = all[keys[i]];
+      const prayers = Object.values(day.prayers || {});
+      const ok = (prayers.filter(p=>p==='onTime').length >= 3) && day.noFap;
+      if (ok) streak++; else break;
+    }
+    $('stats').innerHTML = `
+      <div>عدد الأيام المسجلة: ${keys.length}</div>
+      <div>ستريك الأيام الجيدة (≥3 صلوات في وقتها + نظيف): ${streak}</div>
+    `;
+  }
+
+  function exportData(){
+    const all = localStorage.getItem('migo_data') || '{}';
+    const blob = new Blob([all], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'migo_data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function importData(e){
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      localStorage.setItem('migo_data', JSON.stringify(obj));
+      alert('تم الاستيراد بنجاح');
+      location.reload();
+    } catch (err) {
+      alert('ملف غير صالح');
+    }
+  }
+})();
+</script>
+</body>
+</html>
